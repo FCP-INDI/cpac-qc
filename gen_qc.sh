@@ -1,11 +1,17 @@
 #!/bin/bash
 
+# Check if the correct number of arguments is provided
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $0 <CPAC_OUTPUT_DIR> <QC_DIR>"
+    exit 1
+fi
+
+# Assign arguments to variables
+CPAC_OUTPUT_DIR=$1
+QC_DIR=$2
+
 # Load the virtual environment
 source /ocean/projects/med220004p/bshresth/projects/cpac_dashboard/venv/bin/activate
-
-# Define the CPAC output directory and QC directory
-CPAC_OUTPUT_DIR="/ocean/projects/med220004p/bshresth/vannucci/all_runs/scripts/outputs/AFNI_FSL_strict_noBBR_run2/output"
-QC_DIR="."
 
 # Create the QC directory inside the specified QC_DIR
 QC_DIR_PATH="$QC_DIR/QC"
