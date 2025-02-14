@@ -18,7 +18,7 @@ def run(sub, ses, datatype, file_path, **kwargs):
 
     # check if the image is a 3d or 4d or else using nibabel pixdim
     dim = len(nib.load(file_path).shape)
-    print(nib.load(file_path).shape)
+
     if dim > 3:
         print(Fore.RED + f"NOT 3D: {file_name} \n its {dim}D " + Style.RESET_ALL)
         return

@@ -55,10 +55,10 @@ def is_3d(file_path):
     if dim > 3:
         file_name = os.path.basename(file_path).split(".")[0]
         print(Fore.RED + f"NOT 3D: {file_name} \n its {dim}D " + Style.RESET_ALL)
+        print(Fore.RED + f"Skipping for now ...." + Style.RESET_ALL)
         return False
     return True
 nii_gz_files = nii_gz_files[nii_gz_files.file_path.apply(is_3d)]
-print(nii_gz_files.iloc[0])
 
 # save nii_gz_files to csv
 nii_gz_files_csv_path = os.path.join(qc_dir, "nii_gz_files.csv")
