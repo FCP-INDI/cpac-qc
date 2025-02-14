@@ -1,0 +1,35 @@
+      /* Custom CSS to make the sidebar fixed */
+      .fixed-sidebar {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        overflow-y: auto;
+      }
+      .sticky-title {
+        position: -webkit-sticky; /* For Safari */
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 1000;
+      }
+      .sticky-label {
+        position: -webkit-sticky; /* For Safari */
+        position: sticky;
+        top: 50px; /* Adjust based on your title height */
+        background-color: white;
+        z-index: 1000;
+        padding: 5px;
+        text-align: center;
+        font-weight: bold;
+      }
+      .img-fluid {
+        max-width: 100%;
+        height: auto;
+      }
+      .sticky-logo {
+        position: -webkit-sticky; /* For Safari */
+        position: sticky;
+        top: 0;
+        z-index: 1000; /* Ensure it stays on top */
+        background-color: white; /* Optional: to ensure it doesn't blend with the background */
+      }

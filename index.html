@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <!-- Include Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Include D3.js library -->
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <!-- Your existing HTML content -->
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 col-12 fixed-sidebar">
+          <div class="text-center sticky-logo">
+            <img
+              src="https://avatars.githubusercontent.com/u/2230402?s=200&v=4"
+              alt="Logo"
+              class="img-fluid my-3"
+            />
+            <small class="d-block">&copy; 2024 CPAC developers</small>
+          </div>
+          <ul
+            class="nav flex-column nav-pills"
+            id="subjectTabs"
+            role="tablist"
+          ></ul>
+        </nav>
+
+        <!-- Main content -->
+        <div class="col-md-10 col-12 offset-md-2">
+          <h4 class="mt-4 sticky-title">CPAC - DASH</h4>
+          <div class="tab-content" id="tabContentContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bootstrap JavaScript (popper.js and bootstrap.min.js) -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
