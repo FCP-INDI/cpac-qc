@@ -33,6 +33,12 @@ else:
     # Save df as CSV
     df.to_csv(csv_file, index=False)
 
+for col in df.columns:
+    if isinstance(df[col].iloc[0], dict):
+        df[col] = df[col].apply(lambda x: str(x) if x else "")
+        if df[col].nunique() == 1 and df[col].iloc[0] == "":
+            df = df.drop(columns=[col])
+            
 # give me all columns that have more than one unique value and drop other columns
 non_single_value_columns = df.columns[df.nunique() > 1].tolist()
 df = df[non_single_value_columns]
