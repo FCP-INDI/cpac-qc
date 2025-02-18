@@ -1,4 +1,7 @@
 image_1,image_2
-desc-preproc_T1w,
-label-WM_mask,desc-preproc_T1w
 desc-brain_mask,desc-preproc_T1w
+label-WM_mask,desc-preproc_T1w
+label-GM_mask,desc-preproc_T1w
+label-CSF_mask,desc-preproc_T1w
+desc-preproc_T1w
+
