@@ -11,3 +11,11 @@ mkdir -p "$QC_DIR_PATH"
 
 # Run the main.py script with the specified directories
 python main.py --cpac_output_dir "$CPAC_OUTPUT_DIR" --qc_dir "$QC_DIR_PATH" --overlay_csv "$OVERLAY_CSV"
+
+# Copy the index.html, script.js, and styles.css files to the QC directory
+cp /ocean/projects/med220004p/bshresth/projects/cpac_dashboard/index.html "$QC_DIR_PATH"
+cp /ocean/projects/med220004p/bshresth/projects/cpac_dashboard/script.js "$QC_DIR_PATH"
+cp /ocean/projects/med220004p/bshresth/projects/cpac_dashboard/styles.css "$QC_DIR_PATH"
+
+# Deactivate the virtual environment
+deactivate

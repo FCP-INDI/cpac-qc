@@ -28,6 +28,9 @@ plots_dir = os.path.join(qc_dir, "plots")
 os.makedirs(qc_dir, exist_ok=True)
 os.makedirs(plots_dir, exist_ok=True)
 
+overlay_dir = os.path.join(qc_dir, "overlays")
+os.makedirs(overlay_dir, exist_ok=True)
+
 if os.path.exists(csv_file):
     # Load the CSV file if it exists
     df = pd.read_csv(csv_file)
@@ -35,7 +38,7 @@ else:
     # Load in parallel and stream to disk as a Parquet dataset
     df = bids2table(cpac_output_dir, persistent=True, workers=n_procs).flat
     # Save df as CSV
-    df.to_csv(csv_file, index=False)
+    #df.to_csv(csv_file, index=False)
 
 for col in df.columns:
     if isinstance(df[col].iloc[0], dict):
@@ -95,55 +98,92 @@ nii_gz_files = nii_gz_files[nii_gz_files.file_path.apply(is_3d)]
 
 # save nii_gz_files to csv
 nii_gz_files_csv_path = os.path.join(qc_dir, "nii_gz_files.csv")
-nii_gz_files.to_csv(nii_gz_files_csv_path, index=False)
+#nii_gz_files.to_csv(nii_gz_files_csv_path, index=False)
+
+def process_row(row):
+    image_1 = row.get("image_1", False)
+    image_2 = row.get("image_2", False)
+
+    # get the resource name from the file name
+    resource_name_1 = get_rows_by_resource_name(image_1) if image_1 else None
+    resource_name_2 = get_rows_by_resource_name(image_2) if image_2 else None
+
+    if resource_name_1 is None:
+        print(Fore.RED + f"NOT FOUND: {image_1} " + Style.RESET_ALL)
+        return []
+
+    result_rows = []
+    for _, res1_row in resource_name_1.iterrows():
+        scan = f"task-{res1_row['task']}_run-{int(res1_row['run'])}_" if res1_row['task'] and res1_row['run'] else ""
+
+        if resource_name_2 is not None:
+            for _, res2_row in resource_name_2.iterrows():
+                sub_dir = f"{overlay_dir}/{res1_row['sub']}/{res1_row['ses']}"
+                # Create the directory if it doesn't exist
+                os.makedirs(sub_dir, exist_ok=True)
+                plot_path = f"{sub_dir}/{scan + res1_row['resource_name']}_over_{res2_row['resource_name']}.png"
+                
+                result_rows.append({
+                    "sub": res1_row["sub"],
+                    "ses": res1_row["ses"],
+                    "file_path_1": res1_row["file_path"],
+                    "file_path_2": res2_row["file_path"],
+                    "file_name": scan + res1_row["resource_name"] + "_over_" + res2_row["resource_name"],
+                    "plots_dir": overlay_dir,
+                    "plot_path": plot_path
+                })
+        else:
+            sub_dir = f"{plots_dir}/{res1_row['sub']}/{res1_row['ses']}"
+            # Create the directory if it doesn't exist
+            os.makedirs(sub_dir, exist_ok=True)
+            plot_path = f"{sub_dir}/{scan + res1_row['resource_name']}.png"
+            
+            result_rows.append({
+                "sub": res1_row["sub"],
+                "ses": res1_row["ses"],
+                "file_path_1": res1_row["file_path"],
+                "file_path_2": None,
+                "file_name": scan + res1_row["resource_name"],
+                "plots_dir": plots_dir,
+                "plot_path": plot_path
+            })
+
+    return result_rows
 
 # for rows in overlay_csv find the resource_name and get the rows
 if overlay_csv:
     overlay_df = pd.read_csv(overlay_csv)
     overlay_df = overlay_df.fillna(False)
+    results = overlay_df.apply(process_row, axis=1).tolist()
 
-    def process_row(row):
-        image_1 = row.get("image_1", False)
-        image_2 = row.get("image_2", False)
+    # Flatten the list of lists
+    results = [item for sublist in results for item in sublist]
 
-        print(image_1, image_2)
+    # Create a DataFrame from the results
+    result_df = pd.DataFrame(results)
 
-        # get the resource name from the file name
-        if image_1:
-            resource_name_1 = get_rows_by_resource_name(image_1)
-            if image_2:
-                resource_name_2 = get_rows_by_resource_name(image_2)
-            else:
-                resource_name_2 = None
-        else:
-            print(Fore.RED + f"NOT FOUND: {image_1} " + Style.RESET_ALL)
-            return
-    
-    overlay_df.apply(process_row, axis=1)
+    # save the result_df to csv
+    result_df_csv_path = os.path.join(qc_dir, "results.csv")
+    result_df.to_csv(result_df_csv_path, index=False)
 
-# # Prepare the arguments for each row
-# args = [
-#     (
-#         row['sub'], 
-#         row['ses'], 
-#         row['datatype'], 
-#         row['file_path'], 
-#         {
-#             "task": row.get('task', ''), 
-#             "run": row.get('run', ''),
-#             "space": row.get('space', ''),
-#             "reg": row.get('reg', ''), 
-#             "file_name": row["file_name"],
-#             "plots_dir": plots_dir
-#         }
-#     ) 
-#     for _, row in nii_gz_files.iterrows()
-# ]
 
-# def process_row(args):
-#     run(*args[:4], **args[4])
+def run_wrapper(args):
+    return run(*args)
 
-# # Use multiprocessing to process each row with 100 processes
-# with Pool(processes=n_procs) as pool:
-#     for _ in tqdm(pool.imap_unordered(process_row, args), total=len(args), desc="Processing"):
-#         pass
+args = [
+    (
+        row['sub'], 
+        row['ses'],  
+        row['file_path_1'],
+        row['file_path_2'], 
+        row['file_name'],
+        row['plots_dir'],
+        row['plot_path']
+    ) 
+    for _, row in result_df.iterrows()
+]
+
+# Use multiprocessing to process each row with the specified number of processes
+with Pool(processes=n_procs) as pool:
+    for _ in tqdm(pool.imap_unordered(run_wrapper, args), total=len(args), desc="Processing ..."):
+        pass
