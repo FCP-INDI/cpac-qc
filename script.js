@@ -2,10 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
     var subjectTabs = document.getElementById("subjectTabs");
     var tabContentContainer = document.getElementById("tabContentContainer");
 
-    var csvPath = "nii_gz_files.csv";
+    var csvPath = "results.csv";
     d3.csv(csvPath).then(function (csv) {
-        console.log(csv);
-
         // Extract unique subjects from the CSV data and sort them
         var subjects = Array.from(new Set(csv.map((d) => d.sub))).sort();
 
@@ -46,9 +44,8 @@ function openTab(tabName) {
         tabContent.innerHTML = "";
         console.log("Opening tab:", tabName);
 
-        var csvPath = "nii_gz_files.csv";
+        var csvPath = "results.csv";
         d3.csv(csvPath).then(function (csv) {
-            console.log(csv);
 
             if (Array.isArray(csv)) {
                 var uniqueSesScanReg = Array.from(
@@ -69,8 +66,8 @@ function openTab(tabName) {
 
                     images.forEach(function (imageData) {
                         var imageName = imageData.file_name;
-                        var imagePath = `./plots/${imageName}.png`;
-                        console.log("Loading image:", imagePath); // Log the image path
+                        var imagePath = `./${imageData.relative_path}`;
+
                         var imageContainer = document.createElement("div");
                         imageContainer.className = "container col-md-4";
                         imageContainer.innerHTML = `

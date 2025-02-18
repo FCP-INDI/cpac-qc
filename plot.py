@@ -27,7 +27,7 @@ def run(sub, ses, file_path_1, file_path_2, file_name, plots_dir, plot_path):
         "python", 
         f"{quick_viz_path}/plot_nii_overlay.py", 
         f"{file_path_1}",
-        f"{plot_path}.png", 
+        plot_path, 
         "--cmap", "autumn", 
         "--title", "",
         "--alpha", "0.5", 

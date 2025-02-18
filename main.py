@@ -161,6 +161,7 @@ if overlay_csv:
 
     # Create a DataFrame from the results
     result_df = pd.DataFrame(results)
+    result_df['relative_path'] = result_df.apply(lambda row: os.path.relpath(row['plot_path'], qc_dir), axis=1)
 
     # save the result_df to csv
     result_df_csv_path = os.path.join(qc_dir, "results.csv")
