@@ -28,10 +28,10 @@ def run(sub, ses, file_path_1, file_path_2, file_name, plots_dir, plot_path):
         f"{quick_viz_path}/plot_nii_overlay.py", 
         f"{file_path_1}",
         plot_path, 
-        "--cmap", "autumn", 
+        "--cmap", 'bwr', 
         "--title", "",
         "--alpha", "0.5", 
-        "--threshold", "50"
+        "--threshold", "auto"
     ]
 
     # Add the background parameter if provided

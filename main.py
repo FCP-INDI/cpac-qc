@@ -104,7 +104,6 @@ def process_row(row):
     image_1 = row.get("image_1", False)
     image_2 = row.get("image_2", False)
 
-    # get the resource name from the file name
     resource_name_1 = get_rows_by_resource_name(image_1) if image_1 else None
     resource_name_2 = get_rows_by_resource_name(image_2) if image_2 else None
 
@@ -113,40 +112,44 @@ def process_row(row):
         return []
 
     result_rows = []
+    seen = set()  # To track duplicates
+
     for _, res1_row in resource_name_1.iterrows():
         scan = f"task-{res1_row['task']}_run-{int(res1_row['run'])}_" if res1_row['task'] and res1_row['run'] else ""
 
         if resource_name_2 is not None:
             for _, res2_row in resource_name_2.iterrows():
-                sub_dir = f"{overlay_dir}/{res1_row['sub']}/{res1_row['ses']}"
-                # Create the directory if it doesn't exist
+                file_name = f"ses-{res1_row['ses']}_{scan + res1_row['resource_name']}_over_{res2_row['resource_name']}"
+                if file_name not in seen:
+                    seen.add(file_name)
+                    sub_dir = os.path.join(overlay_dir, res1_row['sub'], res1_row['ses'])
+                    os.makedirs(sub_dir, exist_ok=True)
+                    plot_path = os.path.join(sub_dir, f"{scan + res1_row['resource_name']}_over_{res2_row['resource_name']}.png")
+                    result_rows.append({
+                        "sub": res1_row["sub"],
+                        "ses": res1_row["ses"],
+                        "file_path_1": res1_row["file_path"],
+                        "file_path_2": res2_row["file_path"],
+                        "file_name": file_name,
+                        "plots_dir": overlay_dir,
+                        "plot_path": plot_path
+                    })
+        else:
+            file_name = f"ses-{res1_row['ses']}_{scan + res1_row['resource_name']}"
+            if file_name not in seen:
+                seen.add(file_name)
+                sub_dir = os.path.join(plots_dir, res1_row['sub'], res1_row['ses'])
                 os.makedirs(sub_dir, exist_ok=True)
-                plot_path = f"{sub_dir}/{scan + res1_row['resource_name']}_over_{res2_row['resource_name']}.png"
-                
+                plot_path = os.path.join(sub_dir, f"{scan + res1_row['resource_name']}.png")
                 result_rows.append({
                     "sub": res1_row["sub"],
                     "ses": res1_row["ses"],
                     "file_path_1": res1_row["file_path"],
-                    "file_path_2": res2_row["file_path"],
-                    "file_name": scan + res1_row["resource_name"] + "_over_" + res2_row["resource_name"],
-                    "plots_dir": overlay_dir,
+                    "file_path_2": None,
+                    "file_name": file_name,
+                    "plots_dir": plots_dir,
                     "plot_path": plot_path
                 })
-        else:
-            sub_dir = f"{plots_dir}/{res1_row['sub']}/{res1_row['ses']}"
-            # Create the directory if it doesn't exist
-            os.makedirs(sub_dir, exist_ok=True)
-            plot_path = f"{sub_dir}/{scan + res1_row['resource_name']}.png"
-            
-            result_rows.append({
-                "sub": res1_row["sub"],
-                "ses": res1_row["ses"],
-                "file_path_1": res1_row["file_path"],
-                "file_path_2": None,
-                "file_name": scan + res1_row["resource_name"],
-                "plots_dir": plots_dir,
-                "plot_path": plot_path
-            })
 
     return result_rows
 

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>CPAC - QC Dashboard</title>
     <!-- Include Bootstrap CSS -->
     <link
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
@@ -12,21 +12,20 @@
     <!-- Include D3.js library -->
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <!-- Link to styles.css from GitHub using jsDelivr -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/birajstha/cpac-qc/styles.css" />
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <!-- Your existing HTML content -->
     <div class="container-fluid">
       <div class="row">
         <!-- Sidebar -->
-        <nav class="col-md-2 col-12 fixed-sidebar">
+        <nav class="col-md-2 col-12 fixed-sidebar bg-light">
           <div class="text-center sticky-logo">
             <img
               src="https://avatars.githubusercontent.com/u/2230402?s=200&v=4"
               alt="Logo"
               class="img-fluid my-3"
             />
-            <small class="d-block">&copy; 2024 CPAC developers</small>
+            <small class="d-block">&copy; 2025 CPAC developers</small>
           </div>
           <ul
             class="nav flex-column nav-pills"
@@ -36,9 +35,26 @@
         </nav>
 
         <!-- Main content -->
-        <div class="col-md-10 col-12 offset-md-2">
-          <h4 class="mt-4 sticky-title">CPAC - DASH</h4>
+        <div class="col-md-8 col-12 offset-md-2">
+          <h4 class="mt-4 sticky-title text-center" id="title">CPAC - QC DASHBOARD</h4>
+          <hr/>
           <div class="tab-content" id="tabContentContainer"></div>
+        </div>
+
+        <!-- Sidebar for image selection -->
+        <div class="col-md-2 col-12 fixed-sidebar bg-light d-flex flex-column" id="imageSelectionSidebar">
+          <h5 class="text-center bg-warning text-white p-2">Select Images</h5>
+          <div class="flex-grow-1 overflow-auto">
+            <form id="imageSelectionForm">
+              <!-- Checkboxes will be added here -->
+            </form>
+          </div>
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-secondary container" id="selectAllButton">Select All</button>
+            <button type="button" class="btn btn-secondary container" id="deselectAllButton">Deselect All</button>
+          </div>
+          <button type="button" class="btn btn-success btn-block mt-2" id="applySelectionButton">Apply</button>
+          <div id="noSelectionMessage" style="display: none; color: red; margin-top: 10px;">Select an image or none selected</div>
         </div>
       </div>
     </div>
@@ -47,6 +63,6 @@
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/birajstha/cpac-qc@develop/script.js"></script>
+    <script src="./script.js"></script>
   </body>
 </html>
