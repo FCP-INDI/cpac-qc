@@ -119,12 +119,12 @@ def process_row(row):
 
         if resource_name_2 is not None:
             for _, res2_row in resource_name_2.iterrows():
-                file_name = f"ses-{res1_row['ses']}_{scan + res1_row['resource_name']}_over_{res2_row['resource_name']}"
+                file_name = f"ses-{res1_row['ses']}_{scan + res1_row['resource_name']} overlaid on {res2_row['resource_name']}"
                 if file_name not in seen:
                     seen.add(file_name)
                     sub_dir = os.path.join(overlay_dir, res1_row['sub'], res1_row['ses'])
                     os.makedirs(sub_dir, exist_ok=True)
-                    plot_path = os.path.join(sub_dir, f"{scan + res1_row['resource_name']}_over_{res2_row['resource_name']}.png")
+                    plot_path = os.path.join(sub_dir, f"{scan + res1_row['resource_name']} overlaid on {res2_row['resource_name']}.png")
                     result_rows.append({
                         "sub": res1_row["sub"],
                         "ses": res1_row["ses"],
