@@ -14,7 +14,8 @@ python main.py --cpac_output_dir "$CPAC_OUTPUT_DIR" --qc_dir "$QC_DIR_PATH" --ov
 
 # Copy the index.html, script.js, and styles.css files to the QC directory
 cp /ocean/projects/med220004p/bshresth/projects/cpac-qc/index.html "$QC_DIR_PATH"
-
+cp /ocean/projects/med220004p/bshresth/projects/cpac-qc/script.js "$QC_DIR_PATH"
+cp /ocean/projects/med220004p/bshresth/projects/cpac-qc/styles.css "$QC_DIR_PATH"
 
 # Deactivate the virtual environment
 deactivate

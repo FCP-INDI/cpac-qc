@@ -60,7 +60,7 @@ df = df.drop(columns=["json"])
 nii_gz_files = df[df.file_path.str.endswith(".nii.gz")]
 
 # add one column that breaks the file_path to the last name of the file and drops extension
-nii_gz_files["file_name"] = nii_gz_files.file_path.apply(lambda x: os.path.basename(x).replace(".nii.gz", ""))
+nii_gz_files.loc[:, "file_name"] = nii_gz_files.file_path.apply(lambda x: os.path.basename(x).replace(".nii.gz", ""))
 
 def gen_resource_name(row):
     sub = row["sub"]
@@ -72,7 +72,8 @@ def gen_resource_name(row):
     resource_name = row["file_name"].replace(f"sub-{sub}_ses-{ses}_{scan}", "")
     return resource_name
 
-nii_gz_files["resource_name"] = nii_gz_files.apply(gen_resource_name, axis=1)
+nii_gz_files.loc[:, "resource_name"] = nii_gz_files.apply(gen_resource_name, axis=1)
+
 
 # add a utility function to return rows provided a resource_name
 def get_rows_by_resource_name(resource_name):
@@ -98,7 +99,7 @@ nii_gz_files = nii_gz_files[nii_gz_files.file_path.apply(is_3d_or_4d)]
 
 # save nii_gz_files to csv
 nii_gz_files_csv_path = os.path.join(qc_dir, "nii_gz_files.csv")
-#nii_gz_files.to_csv(nii_gz_files_csv_path, index=False)
+nii_gz_files.to_csv(nii_gz_files_csv_path, index=False)
 
 def process_row(row):
     image_1 = row.get("image_1", False)
