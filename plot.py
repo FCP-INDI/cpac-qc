@@ -16,8 +16,6 @@ def run(sub, ses, file_path_1, file_path_2, file_name, plots_dir, plot_path):
         print(Fore.RED + f"NO FILE: {file_name}" + Style.RESET_ALL)
         return
 
-
-
     # Check if the plot already exists
     if os.path.exists(plot_path):
         print(Fore.YELLOW + f"Plot already exists: {file_name}" + Style.RESET_ALL)
@@ -40,6 +38,11 @@ def run(sub, ses, file_path_1, file_path_2, file_name, plots_dir, plot_path):
     else:
         command.extend(["-b", "None"])
 
+    #check dimension and add -v , 0 to the command if 4d
+    dim = len(nib.load(file_path_1).shape)
+    if dim == 4:
+        command.extend(["-v", "0"])
+        
     try:
         subprocess.run(command)
     except Exception as e:

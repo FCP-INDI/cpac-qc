@@ -86,15 +86,15 @@ def get_rows_by_resource_name(resource_name):
     
 
 # check file_path and drop the ones that are higher dimensions for now
-def is_3d(file_path):
+def is_3d_or_4d(file_path):
     dim = len(nib.load(file_path).shape)
-    if dim > 3:
+    if dim > 4:
         file_name = os.path.basename(file_path).split(".")[0]
         print(Fore.RED + f"NOT 3D: {file_name} \n its {dim}D " + Style.RESET_ALL)
         print(Fore.RED + f"Skipping for now ...." + Style.RESET_ALL)
         return False
     return True
-nii_gz_files = nii_gz_files[nii_gz_files.file_path.apply(is_3d)]
+nii_gz_files = nii_gz_files[nii_gz_files.file_path.apply(is_3d_or_4d)]
 
 # save nii_gz_files to csv
 nii_gz_files_csv_path = os.path.join(qc_dir, "nii_gz_files.csv")
