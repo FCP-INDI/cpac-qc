@@ -7,6 +7,7 @@ cycler==0.12.1
 elbow==0.1.1
 fonttools==4.56.0
 idna==3.10
+importlib_resources==6.5.2
 joblib==1.4.2
 kiwisolver==1.4.8
 lxml==5.3.1
@@ -17,14 +18,14 @@ numpy==2.2.3
 packaging==24.2
 pandas==2.2.3
 pillow==11.1.0
-pip==25.0.1
 pyarrow==19.0.0
 pyparsing==3.2.1
 python-dateutil==2.9.0.post0
 pytz==2025.1
+quickviz @ git+https://github.com/birajstha/quick-viz.git@overlay++
 requests==2.32.3
 scikit-learn==1.6.1
-scipy==1.15.1
+scipy==1.15.2
 six==1.17.0
 threadpoolctl==3.5.0
 tqdm==4.67.1
