@@ -5,9 +5,10 @@ from multiprocessing import Pool
 from tqdm import tqdm
 
 from bids2table import bids2table
-from plot import run
 import nibabel as nib
 from colorama import Fore, Style, init
+
+from qc.plot import run
 
 def gen_resource_name(row):
     sub = row["sub"]

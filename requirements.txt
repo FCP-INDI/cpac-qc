@@ -22,7 +22,6 @@ pyarrow==19.0.0
 pyparsing==3.2.1
 python-dateutil==2.9.0.post0
 pytz==2025.1
-quickviz @ git+https://github.com/birajstha/quick-viz.git@overlay++
 requests==2.32.3
 scikit-learn==1.6.1
 scipy==1.15.2
@@ -32,3 +31,4 @@ tqdm==4.67.1
 typing_extensions==4.12.2
 tzdata==2025.1
 urllib3==2.3.0
+quickviz @ git+https://github.com/birajstha/quick-viz.git@overlay++
