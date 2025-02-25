@@ -22,7 +22,7 @@ def gen_resource_name(row):
 
 
 # add a utility function to return rows provided a resource_name
-def get_rows_by_resource_name(resource_name):
+def get_rows_by_resource_name(resource_name, nii_gz_files):
     # get all rows that have the resource_name
     rows = nii_gz_files[nii_gz_files.resource_name == resource_name]
     if len(rows) == 0:
@@ -40,12 +40,12 @@ def is_3d_or_4d(file_path):
         return False
     return True
 
-def process_row(row):
+def process_row(row, nii_gz_files, overlay_dir, plots_dir):
     image_1 = row.get("image_1", False)
     image_2 = row.get("image_2", False)
 
-    resource_name_1 = get_rows_by_resource_name(image_1) if image_1 else None
-    resource_name_2 = get_rows_by_resource_name(image_2) if image_2 else None
+    resource_name_1 = get_rows_by_resource_name(image_1, nii_gz_files) if image_1 else None
+    resource_name_2 = get_rows_by_resource_name(image_2, nii_gz_files) if image_2 else None
 
     if resource_name_1 is None:
         print(Fore.RED + f"NOT FOUND: {image_1} " + Style.RESET_ALL)

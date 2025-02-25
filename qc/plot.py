@@ -4,10 +4,9 @@ import os
 from tqdm import tqdm
 from colorama import Fore, Style, init
 import nibabel as nib
-from quickviz import plot_nii_overlay
+from quickviz.plot_nii_overlay import plot_nii_overlay
 
 def run(sub, ses, file_path_1, file_path_2, file_name, plots_dir, plot_path):
-
     # check if the above files exist
     if not os.path.exists(file_path_1):
         print(Fore.RED + f"NO FILE: {file_name}" + Style.RESET_ALL)

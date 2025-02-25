@@ -37,8 +37,8 @@ def main(cpac_output_dir, qc_dir, overlay_csv=None, n_procs=10):
                 df = df.drop(columns=[col])
                 
     # give me all columns that have more than one unique value and drop other columns
-    non_single_value_columns = df.columns[df.nunique() > 1].tolist()
-    df = df[non_single_value_columns]
+    # non_single_value_columns = df.columns[df.nunique() > 1].tolist()
+    # df = df[non_single_value_columns]
 
     # fill all columns with NaN with empty string
     df = df.fillna("")
@@ -64,7 +64,7 @@ def main(cpac_output_dir, qc_dir, overlay_csv=None, n_procs=10):
     if overlay_csv:
         overlay_df = pd.read_csv(overlay_csv)
         overlay_df = overlay_df.fillna(False)
-        results = overlay_df.apply(process_row, axis=1).tolist()
+        results = overlay_df.apply(lambda row: process_row(row, nii_gz_files, overlay_dir, plots_dir), axis=1).tolist()
 
         # Flatten the list of lists
         results = [item for sublist in results for item in sublist]
