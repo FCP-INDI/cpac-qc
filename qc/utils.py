@@ -10,14 +10,24 @@ from colorama import Fore, Style, init
 
 from qc.plot import run
 
+import re
+
 def gen_resource_name(row):
     sub = row["sub"]
-    ses = row["ses"]
+    ses = row["ses"] if row["ses"] != "" else False
+
+    sub_ses = f"sub-{sub}_ses-{ses}" if ses else f"sub-{sub}"
+
     task = row["task"] if row["task"] != "" else False
-    run = int(row["run"]) if row["run"] != "" else False
+    run = row["run"] if row["run"] != "" else False
     
-    scan = f"task-{task}_run-{run}_" if task and run else ""
-    resource_name = row["file_name"].replace(f"sub-{sub}_ses-{ses}_{scan}", "")
+    # Create a flexible pattern for the scan part
+    scan = f"task-{task}_run-\\d*_" if task and run else ""
+    
+    # Use regular expression to replace the pattern
+    pattern = re.escape(f"{sub_ses}_") + scan
+    resource_name = re.sub(pattern, "", row["file_name"])
+    
     return resource_name
 
 

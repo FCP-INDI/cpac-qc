@@ -47,7 +47,7 @@ def main(cpac_output_dir, qc_dir, overlay_csv=None, n_procs=10):
     df = df.drop(columns=["json"])
 
     # give me all whose ext is nii.gz
-    nii_gz_files = df[df.file_path.str.endswith(".nii.gz")]
+    nii_gz_files = df[df.file_path.str.endswith(".nii.gz")].copy()
 
     # add one column that breaks the file_path to the last name of the file and drops extension
     nii_gz_files.loc[:, "file_name"] = nii_gz_files.file_path.apply(lambda x: os.path.basename(x).replace(".nii.gz", ""))
