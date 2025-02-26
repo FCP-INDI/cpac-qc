@@ -10,7 +10,7 @@ from colorama import Fore, Style, init
 from qc.utils import *
 from qc.plot import run
 
-def main(cpac_output_dir, qc_dir, overlay_csv=None, n_procs=10):
+def main(cpac_output_dir, qc_dir, overlay_csv=False, n_procs=10):
     qc_dir = os.path.join(qc_dir)
     csv_file = os.path.join(qc_dir, "df.csv")
 
@@ -71,12 +71,20 @@ def main(cpac_output_dir, qc_dir, overlay_csv=None, n_procs=10):
 
         # Create a DataFrame from the results
         result_df = pd.DataFrame(results)
-        result_df['relative_path'] = result_df.apply(lambda row: os.path.relpath(row['plot_path'], qc_dir), axis=1)
-
-        # save the result_df to csv
-        result_df_csv_path = os.path.join(qc_dir, "results.csv")
-        result_df.to_csv(result_df_csv_path, index=False)
-
+    else:
+        result_df = nii_gz_files.copy()
+        result_df['file_path_1'] = nii_gz_files['file_path']
+        result_df['file_path_2'] = None
+        result_df['file_name'] = result_df.apply(lambda row: gen_filename(res1_row=row), axis=1)
+        result_df['plots_dir'] = plots_dir
+        result_df['plot_path'] = result_df.apply(lambda row: os.path.join(plots_dir, f"{row['resource_name']}.png"), axis=1)
+    
+    result_df['relative_path'] = result_df.apply(lambda row: os.path.relpath(row['plot_path'], qc_dir), axis=1)
+    
+    # save the result_df to csv
+    result_df_csv_path = os.path.join(qc_dir, "results.csv")
+    result_df.to_csv(result_df_csv_path, index=False)
+    
     args = [
         (
             row['sub'], 

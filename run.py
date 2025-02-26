@@ -7,7 +7,7 @@ if __name__ == '__main__':
     qc_dir = "/qc_dir"
     overlay_csv = "/config/overlay.csv"  # Set to None if not using an overlay CSV
     if not os.path.exists(overlay_csv):
-        overlay_csv = "/app/qc/config/overlay.csv"
+        overlay_csv = False
     n_procs = 10
 
     main(cpac_output_dir, qc_dir, overlay_csv, n_procs)

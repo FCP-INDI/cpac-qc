@@ -50,6 +50,21 @@ def is_3d_or_4d(file_path):
         return False
     return True
 
+def gen_filename(res1_row, res2_row=None):
+    scan = f"task-{res1_row['task']}_run-{int(res1_row['run'])}_" if res1_row['task'] and res1_row['run'] else ""
+    if res2_row is not None:
+        return f"sub-{res1_row['sub']}_ses-{res1_row['ses']}_{scan + res1_row['resource_name']} overlaid on {res2_row['resource_name']}"
+    else:
+        return f"sub-{res1_row['sub']}_ses-{res1_row['ses']}_{scan + res1_row['resource_name']}"
+
+def create_directory(sub, ses, base_dir):
+    sub_dir = os.path.join(base_dir, sub, ses)
+    os.makedirs(sub_dir, exist_ok=True)
+    return sub_dir
+
+def generate_plot_path(sub_dir, file_name):
+    return os.path.join(sub_dir, f"{file_name}.png")
+
 def process_row(row, nii_gz_files, overlay_dir, plots_dir):
     image_1 = row.get("image_1", False)
     image_2 = row.get("image_2", False)
@@ -65,16 +80,13 @@ def process_row(row, nii_gz_files, overlay_dir, plots_dir):
     seen = set()  # To track duplicates
 
     for _, res1_row in resource_name_1.iterrows():
-        scan = f"task-{res1_row['task']}_run-{int(res1_row['run'])}_" if res1_row['task'] and res1_row['run'] else ""
-
         if resource_name_2 is not None:
             for _, res2_row in resource_name_2.iterrows():
-                file_name = f"ses-{res1_row['ses']}_{scan + res1_row['resource_name']} overlaid on {res2_row['resource_name']}"
+                file_name = gen_filename(res1_row, res2_row)
                 if file_name not in seen:
                     seen.add(file_name)
-                    sub_dir = os.path.join(overlay_dir, res1_row['sub'], res1_row['ses'])
-                    os.makedirs(sub_dir, exist_ok=True)
-                    plot_path = os.path.join(sub_dir, f"{scan + res1_row['resource_name']} overlaid on {res2_row['resource_name']}.png")
+                    sub_dir = create_directory(res1_row['sub'], res1_row['ses'], overlay_dir)
+                    plot_path = generate_plot_path(sub_dir, file_name)
                     result_rows.append({
                         "sub": res1_row["sub"],
                         "ses": res1_row["ses"],
@@ -85,12 +97,11 @@ def process_row(row, nii_gz_files, overlay_dir, plots_dir):
                         "plot_path": plot_path
                     })
         else:
-            file_name = f"ses-{res1_row['ses']}_{scan + res1_row['resource_name']}"
+            file_name = gen_filename(res1_row)
             if file_name not in seen:
                 seen.add(file_name)
-                sub_dir = os.path.join(plots_dir, res1_row['sub'], res1_row['ses'])
-                os.makedirs(sub_dir, exist_ok=True)
-                plot_path = os.path.join(sub_dir, f"{scan + res1_row['resource_name']}.png")
+                sub_dir = create_directory(res1_row['sub'], res1_row['ses'], plots_dir)
+                plot_path = generate_plot_path(sub_dir, file_name)
                 result_rows.append({
                     "sub": res1_row["sub"],
                     "ses": res1_row["ses"],
