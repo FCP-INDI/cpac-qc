@@ -36,6 +36,14 @@ body {
   z-index: 1000;
 }
 
+.sticky-search-bar {
+  position: -webkit-sticky; /* For Safari */
+  position: sticky;
+  top: 0;
+  z-index: 1000; /* Ensure it stays on top of other elements */
+  background-color: white; /* Optional: to ensure it doesn't blend with the background */
+}
+
 .img-fluid {
   max-width: 100%;
   height: auto;

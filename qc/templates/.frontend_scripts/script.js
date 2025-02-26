@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
         var searchBar = document.createElement("input");
         searchBar.type = "text";
         searchBar.id = "imageSearchBar";
-        searchBar.className = "form-control";
+        searchBar.className = "form-control sticky-search-bar";
         searchBar.placeholder = "Search images...";
         form.appendChild(searchBar);
 
