@@ -77,8 +77,9 @@ def main(cpac_output_dir, qc_dir, overlay_csv=False, n_procs=10):
         result_df['file_path_2'] = None
         result_df['file_name'] = result_df.apply(lambda row: gen_filename(res1_row=row), axis=1)
         result_df['plots_dir'] = plots_dir
-        result_df['plot_path'] = result_df.apply(lambda row: os.path.join(plots_dir, f"{row['resource_name']}.png"), axis=1)
-    
+        result_df['plot_path'] = result_df.apply(lambda row: generate_plot_path(create_directory(row['sub'], row['ses'], row['plots_dir']), row['file_name']), axis=1)
+
+
     result_df['relative_path'] = result_df.apply(lambda row: os.path.relpath(row['plot_path'], qc_dir), axis=1)
     
     # save the result_df to csv
