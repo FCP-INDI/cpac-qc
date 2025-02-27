@@ -1,6 +1,6 @@
 import pandas as pd
 import os
-from multiprocessing import Pool
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from tqdm import tqdm
 
 from bids2table import bids2table
@@ -104,10 +104,11 @@ def main(cpac_output_dir, qc_dir, overlay_csv=False, n_procs=10):
         for _, row in result_df.iterrows()
     ]
 
-    # Use multiprocessing to process each row with the specified number of processes
-    with Pool(processes=n_procs) as pool:
-        for _ in tqdm(pool.imap_unordered(run_wrapper, args), total=len(args), desc="Processing ..."):
-            pass
+    # Use concurrent.futures to process each row with the specified number of processes
+    with ProcessPoolExecutor(max_workers=n_procs) as executor:
+        futures = {executor.submit(run_wrapper, arg): arg for arg in args}
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Processing ..."):
+            future.result()
 
 if __name__ == "__main__":
     import argparse
