@@ -19,3 +19,4 @@ RUN mkdir -p /cpac_output_dir /qc_dir /config
 
 # Set the entrypoint to run the application
 ENTRYPOINT ["python3", "/app/run.py"]
+CMD ["--n_procs"]
