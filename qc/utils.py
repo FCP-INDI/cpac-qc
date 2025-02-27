@@ -30,23 +30,22 @@ def gen_resource_name(row):
     
     return resource_name
 
-
 # add a utility function to return rows provided a resource_name
-def get_rows_by_resource_name(resource_name, nii_gz_files):
+def get_rows_by_resource_name(resource_name, nii_gz_files, logger):
     # get all rows that have the resource_name
     rows = nii_gz_files[nii_gz_files.resource_name == resource_name]
     if len(rows) == 0:
-        print(Fore.RED + f"NOT FOUND: {resource_name} " + Style.RESET_ALL)
+        logger.error(f"NOT FOUND: {resource_name}")
         return None
     return rows
 
 # check file_path and drop the ones that are higher dimensions for now
-def is_3d_or_4d(file_path):
+def is_3d_or_4d(file_path, logger):
     dim = len(nib.load(file_path).shape)
     if dim > 4:
         file_name = os.path.basename(file_path).split(".")[0]
-        print(Fore.RED + f"NOT 3D: {file_name} \n its {dim}D " + Style.RESET_ALL)
-        print(Fore.RED + f"Skipping for now ...." + Style.RESET_ALL)
+        logger.error(f"NOT 3D: {file_name} \n its {dim}D")
+        logger.error(f"Skipping for now ....")
         return False
     return True
 
@@ -65,15 +64,15 @@ def create_directory(sub, ses, base_dir):
 def generate_plot_path(sub_dir, file_name):
     return os.path.join(sub_dir, f"{file_name}.png")
 
-def process_row(row, nii_gz_files, overlay_dir, plots_dir):
+def process_row(row, nii_gz_files, overlay_dir, plots_dir, logger):
     image_1 = row.get("image_1", False)
     image_2 = row.get("image_2", False)
 
-    resource_name_1 = get_rows_by_resource_name(image_1, nii_gz_files) if image_1 else None
-    resource_name_2 = get_rows_by_resource_name(image_2, nii_gz_files) if image_2 else None
+    resource_name_1 = get_rows_by_resource_name(image_1, nii_gz_files, logger) if image_1 else None
+    resource_name_2 = get_rows_by_resource_name(image_2, nii_gz_files, logger) if image_2 else None
 
     if resource_name_1 is None:
-        print(Fore.RED + f"NOT FOUND: {image_1} " + Style.RESET_ALL)
+        logger.error(f"NOT FOUND: {image_1}")
         return []
 
     result_rows = []

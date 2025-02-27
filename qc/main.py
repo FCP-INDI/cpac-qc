@@ -6,16 +6,39 @@ from tqdm import tqdm
 from bids2table import bids2table
 import nibabel as nib
 from colorama import Fore, Style, init
+import logging
 
 from qc.utils import *
 from qc.plot import run
 
+def setup_logger(qc_dir):
+    # setup logger
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+
+    # Create a file handler
+    log_file = os.path.join(qc_dir, 'qc.log')
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(logging.INFO)
+
+    # Create a logging format
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+
+    # Add the handlers to the logger
+    logger.addHandler(file_handler)
+    
+    return logger
+
 def main(cpac_output_dir, qc_dir, overlay_csv=False, n_procs=10):
-    qc_dir = os.path.join(qc_dir)
+    os.makedirs(qc_dir, exist_ok=True)
+    logger = setup_logger(qc_dir)
+    
+    logger.info(f"Running QC with nprocs {n_procs}...")
+    
     csv_file = os.path.join(qc_dir, "df.csv")
 
     plots_dir = os.path.join(qc_dir, "plots")
-    os.makedirs(qc_dir, exist_ok=True)
     os.makedirs(plots_dir, exist_ok=True)
 
     overlay_dir = os.path.join(qc_dir, "overlays")
@@ -54,7 +77,7 @@ def main(cpac_output_dir, qc_dir, overlay_csv=False, n_procs=10):
 
     nii_gz_files.loc[:, "resource_name"] = nii_gz_files.apply(gen_resource_name, axis=1)
 
-    nii_gz_files = nii_gz_files[nii_gz_files.file_path.apply(is_3d_or_4d)]
+    nii_gz_files = nii_gz_files[nii_gz_files.file_path.apply(lambda x: is_3d_or_4d(x, logger))]
 
     # save nii_gz_files to csv
     nii_gz_files_csv_path = os.path.join(qc_dir, "nii_gz_files.csv")
@@ -64,7 +87,7 @@ def main(cpac_output_dir, qc_dir, overlay_csv=False, n_procs=10):
     if overlay_csv:
         overlay_df = pd.read_csv(overlay_csv)
         overlay_df = overlay_df.fillna(False)
-        results = overlay_df.apply(lambda row: process_row(row, nii_gz_files, overlay_dir, plots_dir), axis=1).tolist()
+        results = overlay_df.apply(lambda row: process_row(row, nii_gz_files, overlay_dir, plots_dir, logger), axis=1).tolist()
 
         # Flatten the list of lists
         results = [item for sublist in results for item in sublist]
@@ -99,17 +122,26 @@ def main(cpac_output_dir, qc_dir, overlay_csv=False, n_procs=10):
             row['file_path_2'], 
             row['file_name'],
             row['plots_dir'],
-            row['plot_path']
+            row['plot_path'],
+            logger
         ) 
         for _, row in result_df.iterrows()
     ]
 
+    not_plotted = []
     # Use concurrent.futures to process each row with the specified number of processes
     with ProcessPoolExecutor(max_workers=n_procs) as executor:
         futures = {executor.submit(run_wrapper, arg): arg for arg in args}
         for future in tqdm(as_completed(futures), total=len(futures), desc="Processing ..."):
-            future.result()
-
+            try:
+                future.result()
+            except Exception as e:
+                if "terminated abruptly" in str(e):
+                    print(Fore.RED + f"Error processing {futures[future]}: {e}\n Try with lower number of processes" + Style.RESET_ALL)
+                logger.error(f"Error processing {futures[future]}: {e}, Try with a lower number of processes")
+                not_plotted.append(futures[future])
+    return not_plotted
+    
 if __name__ == "__main__":
     import argparse
 
